@@ -17,8 +17,7 @@ router.get('/', requireAuth, (req, res) => {
   const out = { users: [], chats: [], messages: [], files: [] };
 
   if (['all', 'users'].includes(type) || ['all', 'users'].includes(type)) {
-    out.users = q.all(`SELECT * FROM users WHERE deletedAt IS NULL AND (username LIKE ? OR displayName LIKE ?) LIMIT 10`, like, like)
-      .map((u) => chat.publicUserById(u.id, mine));
+    out.users = chat.searchUsers(term, mine, 10);
   }
   if (['all', 'chats'].includes(type)) {
     out.chats = q.all(`

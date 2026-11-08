@@ -191,3 +191,25 @@ export function notify(userId, type, title, body = '', data = {}) {
 export async function notifyMany(userIds, type, title, body, data) {
   for (const u of new Set(userIds)) if (u && u !== data?.exclude) notify(u, type, title, body, data);
 }
+
+/* one user-search rule for every screen (Contacts and the top-bar search) */
+export function searchUsers(raw, viewerId, limit = 24) {
+  const lower = String(raw || '').slice(0, 80).trim().toLowerCase();
+  if (!lower) return [];
+  let rows = [];
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lower)) {
+    rows = q.all(`SELECT * FROM users WHERE deletedAt IS NULL AND LOWER(email)=? LIMIT 1`, lower);
+  }
+  if (!rows.length) {
+    const terms = lower.split(/\s+/).map((t) => t.replace(/@/g, '')).filter(Boolean);
+    if (terms.length) {
+      const conds = terms.map(() => `(username LIKE ? ESCAPE '\\' OR displayName LIKE ? ESCAPE '\\')`).join(' AND ');
+      const params = terms.flatMap((t) => {
+        const like = `%${t.replace(/[\\%_]/g, (c) => '\\' + c)}%`;
+        return [like, like];
+      });
+      rows = q.all(`SELECT * FROM users WHERE deletedAt IS NULL AND ${conds} ORDER BY username LIMIT ${Number(limit) || 24}`, ...params);
+    }
+  }
+  return rows.map((u) => publicUserById(u.id, viewerId)).filter(Boolean);
+}

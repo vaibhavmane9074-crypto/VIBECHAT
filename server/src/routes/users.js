@@ -11,28 +11,8 @@ router.use(requireAuth);
 /* directory / discovery */
 router.get('/', requireAuth, (req, res) => {
   const raw = req.query.q ? String(req.query.q).slice(0, 80).trim() : '';
-  const lower = raw.toLowerCase();
-  let rows = [];
-  if (raw) {
-    /* 1) a full email address: exact match only (never reveals partial emails) */
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lower)) {
-      rows = q.all(`SELECT * FROM users WHERE deletedAt IS NULL AND LOWER(email)=? LIMIT 1`, lower);
-    }
-    /* 2) names / usernames: every word must match; stray @ signs are ignored ("Ashwini @07@") */
-    if (!rows.length) {
-      const terms = lower.split(/\s+/).map((t) => t.replace(/@/g, '')).filter(Boolean);
-      if (terms.length) {
-        const conds = terms.map(() => `(username LIKE ? ESCAPE '\\' OR displayName LIKE ? ESCAPE '\\')`).join(' AND ');
-        const params = terms.flatMap((t) => {
-          const like = `%${t.replace(/[\\%_]/g, (c) => '\\' + c)}%`;
-          return [like, like];
-        });
-        rows = q.all(`SELECT * FROM users WHERE deletedAt IS NULL AND ${conds} ORDER BY username LIMIT 24`, ...params);
-      }
-    }
-  } else {
-    rows = q.all(`SELECT * FROM users WHERE deletedAt IS NULL AND id IN (SELECT CASE WHEN a=? THEN b ELSE a END FROM contacts WHERE a=? OR b=?) ORDER BY username LIMIT 50`, req.user.id, req.user.id, req.user.id);
-  }
+  if (raw) return res.json({ users: chat.searchUsers(raw, req.user.id) });
+  const rows = q.all(`SELECT * FROM users WHERE deletedAt IS NULL AND id IN (SELECT CASE WHEN a=? THEN b ELSE a END FROM contacts WHERE a=? OR b=?) ORDER BY username LIMIT 50`, req.user.id, req.user.id, req.user.id);
   res.json({ users: rows.map((u) => chat.publicUserById(u.id, req.user.id)).filter(Boolean) });
 });
 
