@@ -1,0 +1,22 @@
+{
+  "name": "vibechat-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "VIBECHAT — Beyond Messaging. Node.js backend: Express + Socket.IO + SQLite + WebRTC signaling.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node scripts/smoke.mjs && BASE=\"http://localhost:4811\" node scripts/socket.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^5.3.0",
+    "socket.io": "^4.8.0",
+    "socket.io-client": "^4.8.4"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}

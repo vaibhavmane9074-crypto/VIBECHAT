@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: vibechat
+    runtime: node
+    plan: starter
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: VC_ADMIN_EMAIL
+        sync: false
+      - key: VC_ADMIN_PASSWORD
+        sync: false
+      - key: TURN_URL
+        sync: false
+      - key: TURN_USER
+        sync: false
+      - key: TURN_PASS
+        sync: false
+    disk:
+      name: vibechat-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 5

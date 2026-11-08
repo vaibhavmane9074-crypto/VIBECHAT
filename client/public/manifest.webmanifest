@@ -1,0 +1,9 @@
+{
+  "name": "VIBECHAT — Beyond Messaging",
+  "short_name": "VIBECHAT",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a12",
+  "theme_color": "#0b0b14",
+  "icons": [{ "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

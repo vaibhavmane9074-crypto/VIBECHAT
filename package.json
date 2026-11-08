@@ -1,0 +1,18 @@
+{
+  "name": "vibechat",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "VIBECHAT — Beyond Messaging. Full-stack next-gen chat (server + client).",
+  "scripts": {
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build": "npm --prefix server install --no-audit --no-fund && npm --prefix client install --no-audit --no-fund && npm --prefix client run build",
+    "start": "npm --prefix server start",
+    "test": "npm --prefix server test",
+    "smoke": "npm --prefix server run smoke"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}
